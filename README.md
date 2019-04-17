@@ -1,12 +1,12 @@
 # Chess
 Simple chess game, python
 
-##Prerequisites
+## Prerequisites
 Python > 3.0
 pygame 
 
 
-##Installing
+## Installing
 Download repositry, open comand prompt, navigate to downloaded repository and run python ChessBoard.py
 
 ## Built With
