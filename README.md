@@ -13,6 +13,12 @@ Download repositry, open comand prompt, navigate to downloaded repository and ru
 python ChessBoard.py
 ```
 
+## Gameplay
+Click on the piece than again on the desired location to move the piece. Possibilities where piece can move are shown with green dot.
+
+![alt text](https://github.com/JernejHenigman/Chess/blob/master/chess_board2.png)
+
+
 
 ## Built With
 
