@@ -14,7 +14,7 @@ python ChessBoard.py
 ```
 
 ## Gameplay
-Click on the piece than again on the desired location to move the piece. Possibilities where piece can move are shown with green dot.
+Click on the piece than again on the desired location to move the piece. Possibilities where piece can move are shown with grey dot.
 
 ![alt text](https://github.com/JernejHenigman/Chess/blob/master/chess_board2.png)
 
