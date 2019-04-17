@@ -17,3 +17,7 @@ python ChessBoard.py
 ## Built With
 
 * [pygame](https://www.pygame.org/) - The game framework
+
+
+## Author
+* Jernej Henigman
