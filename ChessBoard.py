@@ -407,12 +407,6 @@ class ChessBoard:
 
         return moves
 
-    def traverse_board(self, color):
-        for i in range(0, 8):
-            for j in range(0, 8):
-                if (type(self.chessBoard[i][j]) == ChessPiece):
-                    if self.chessBoard[i][j].color == color:
-                        yield (i, j)
 
     def check_all_pieces_for_check(self, color):
         for i in range(0, 8):
@@ -578,6 +572,46 @@ class ChessBoard:
 
             return False
 
+    def find_moves_under_pin(self, i, j):
+        moves_under_pin = []
+        current_piece = self.get_piece(i, j)
+        for move in self.moves:
+            # remove pinning piece, thats fine, player is allowed to do that
+            if move[0] == self.piece_that_gives_pin_location[0] and move[1] == \
+                    self.piece_that_gives_pin_location[1]:
+                moves_under_pin.append((move[0], move[1]))
+                continue
+
+            # we remove moving piece from current position
+            self.remove_piece(i, j)
+            # we save taken opponent move by our piece, so that we can later restore its position
+            temp_piece = self.get_piece(move[0], move[1])
+
+            # we move our piece on that location
+            self.move_piece(move[0], move[1], current_piece)
+            moves_that_might_deliver_check = self.possible_moves(self.piece_that_gives_pin_location[0],
+                                                                 self.piece_that_gives_pin_location[1],
+                                                                 self.get_piece(
+                                                                     self.piece_that_gives_pin_location[0],
+                                                                     self.piece_that_gives_pin_location[1]))
+            # we remove our piece from temporary location
+            self.remove_piece(move[0], move[1])
+            # we move temporary taken piece into its original position
+            self.move_piece(move[0], move[1], temp_piece)
+
+            if self.current_color == "black":
+                color = "white"
+            else:
+                color = "black"
+
+            if (not self.check_for_check(moves_that_might_deliver_check, color)):
+                moves_under_pin.append((move[0], move[1]))
+
+            # we move our piece into original position
+            self.move_piece(i, j, current_piece)
+
+        return moves_under_pin
+
     def game(self, i, j):
 
         if self.select_piece:
@@ -600,44 +634,7 @@ class ChessBoard:
 
             # check for pins, accordingly reduces move possibilities
             if (self.is_piece_pinned(i, j, self.current_color) and not self.is_check):
-                moves_under_pin = []
-                current_piece = self.get_piece(i, j)
-                for move in self.moves:
-                    # remove pinning piece, thats fine, player is allowed to do that
-                    if move[0] == self.piece_that_gives_pin_location[0] and move[1] == \
-                            self.piece_that_gives_pin_location[1]:
-                        moves_under_pin.append((move[0], move[1]))
-                        continue
-
-                    # we remove moving piece from current position
-                    self.remove_piece(i, j)
-                    # we save taken opponent move by our piece, so that we can later restore its position
-                    temp_piece = self.get_piece(move[0], move[1])
-
-                    # we move our piece on that location
-                    self.move_piece(move[0], move[1], current_piece)
-                    moves_that_might_deliver_check = self.possible_moves(self.piece_that_gives_pin_location[0],
-                                                                         self.piece_that_gives_pin_location[1],
-                                                                         self.get_piece(
-                                                                             self.piece_that_gives_pin_location[0],
-                                                                             self.piece_that_gives_pin_location[1]))
-                    # we remove our piece from temporary location
-                    self.remove_piece(move[0], move[1])
-                    # we move temporary taken piece into its original position
-                    self.move_piece(move[0], move[1], temp_piece)
-
-                    if self.current_color == "black":
-                        color = "white"
-                    else:
-                        color = "black"
-
-                    if (not self.check_for_check(moves_that_might_deliver_check, color)):
-                        moves_under_pin.append((move[0], move[1]))
-
-                    # we move our piece into original position
-                    self.move_piece(i, j, current_piece)
-
-                self.moves = moves_under_pin
+                self.moves = self.find_moves_under_pin(i, j)
 
             king_location = (-1, -1)
             if self.current_color == "black":
@@ -647,8 +644,6 @@ class ChessBoard:
 
             if (self.is_check):
                 self.moves = self.find_moves_under_check(i, j, king_location)
-
-            #return "Possible moves are:" + str(self.moves)
 
         else:
 
@@ -667,8 +662,6 @@ class ChessBoard:
 
             # after player makes a move, we check if player deliverd a check to opponents king, we need for discovery checks
             self.check_all_pieces_for_check(self.current_color)
-
-
 
             if self.current_color == "white":
                 self.current_color = "black"
