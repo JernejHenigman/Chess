@@ -17,6 +17,8 @@ class ChessBoard:
         self.piece_that_gives_check_location = (-1, -1)
         self.piece_that_gives_pin_location = (-1, -1)
         self.block_check_location = (-1, -1)
+        self.black_king_moved = False
+        self.white_king_moved = False
         self.piece = None
         self.moves = []
         self.select_piece = True
@@ -449,7 +451,7 @@ class ChessBoard:
             new_color = "black"
 
         pawn_moves = self.find_pawns_attacking_locations(new_color)
-        print(pawn_moves)
+
         other_moves = []
 
         for k in range(0, 8):
@@ -560,19 +562,16 @@ class ChessBoard:
         return moves_under_check
 
     def promote_pawn(self,i,j):
-        print(i,j)
         piece = self.get_piece(i,j)
         if type(piece) == ChessPiece:
 
             if piece.piece == "pawn":
                 if (piece.color == self.current_color):
-                    print("moving "+self.current_color+" pawn")
+
                     if self.current_color == "white" and i == 0:
                         self.chessBoard[i][j] = self.white_queen
                     elif self.current_color == "black" and i == 7:
                         self.chessBoard[i][j] = self.black_queen
-
-        print((self.chessBoard[i][j].piece))
 
     def is_checkmate(self, king_location):
         possible_moves = []
@@ -630,6 +629,26 @@ class ChessBoard:
             self.move_piece(i, j, current_piece)
 
         return moves_under_pin
+
+    # TODO
+    def rook_can_see_king(self):
+        return False
+
+    # TODO
+    def castling_squares_under_attack(self):
+        return False
+
+    # TODO
+    def castling(self):
+        if self.current_color == "white" and self.white_king_moved and not self.rook_can_see_king() and not self.castling_squares_under_attack():
+            return "cannot castle white king"
+
+        if self.current_color == "black" and self.black_king_moved and not self.rook_can_see_king() and not self.castling_squares_under_attack():
+            return "cannot castle black king"
+
+    # TODO
+    def en_passant(self):
+        pass
 
     def game(self, i, j):
 
