@@ -422,7 +422,7 @@ class ChessBoard:
     def find_pawns_attacking_locations(self, color):
         attacking_locations = []
 
-        if color == "black":
+        if color == "white":
             sign = [[-1, -1], [-1, 1]]
         else:
             sign = [[1, -1], [1, 1]]
@@ -449,6 +449,7 @@ class ChessBoard:
             new_color = "black"
 
         pawn_moves = self.find_pawns_attacking_locations(new_color)
+        print(pawn_moves)
         other_moves = []
 
         for k in range(0, 8):
@@ -465,6 +466,24 @@ class ChessBoard:
         for move in all_moves:
             if move in kings_move:
                 kings_move.remove(move)
+
+        # remove king
+        temp_king = self.chessBoard[i][j]
+        self.chessBoard[i][j] = -1
+
+        # need to eliminate possibilty for king to move into direction where attacking piece that is giving check can also move
+        # this happens when attacking with rook, bishop or queen, since king is blocking that move possibility, 1 possible king move
+        # under check was always forbiden. Figured this our only when I played the game.
+        moves_from_checking_piece = self.possible_moves(self.piece_that_gives_check_location[0],
+                                                        self.piece_that_gives_check_location[1],
+                                                        self.chessBoard[self.piece_that_gives_check_location[0]][
+                                                            self.piece_that_gives_check_location[1]])
+        for move in moves_from_checking_piece:
+            if move in kings_move:
+                kings_move.remove(move)
+
+        # put king back on the board
+        self.chessBoard[i][j] = temp_king
 
         return kings_move
 
